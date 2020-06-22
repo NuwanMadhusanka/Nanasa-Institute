@@ -14,12 +14,22 @@ const loginSchema = yup.object({
         .min(8),
 })
 
-const login = ({ email, password }) => {
-    console.log(email)
-    console.log(password)
-}
 
-export default function Login() {
+
+export default function Login({ navigation }) {
+
+    const login = ({ email, password }) => {
+        if (email == 'admin@gmail.com') {
+            navigation.navigate('Admin');
+        } else if (email == 'instructor@gmail.com') {
+            navigation.navigate('Instructor');
+        } else if (email == 'student@gmail.com') {
+            navigation.navigate('Student');
+        } else {
+            navigation.navigate('Login');
+        }
+    }
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={globalStyles.container}>
@@ -72,7 +82,7 @@ export default function Login() {
 
 const styles = StyleSheet.create({
     title: {
-        marginTop: 50,
+        marginTop: 10,
         fontSize: 40,
         alignSelf: 'center',
         fontFamily: 'Sriracha-Regular'

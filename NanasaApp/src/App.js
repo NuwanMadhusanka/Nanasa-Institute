@@ -1,10 +1,10 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 import Login from './screens/login';
+import Navigator from './routes/loginStack'
 
 const App: () => React$Node = () => {
   return (
-    <Login />
+    <Navigator />
   );
 };
 
