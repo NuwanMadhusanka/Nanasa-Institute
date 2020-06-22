@@ -1,10 +1,10 @@
 import React from 'react';
-import { Text } from 'react-native';
-
+import { Text, View } from 'react-native';
+import Login from './screens/login';
 
 const App: () => React$Node = () => {
   return (
-    <Text>Nanasa App</Text>
+    <Login />
   );
 };
 

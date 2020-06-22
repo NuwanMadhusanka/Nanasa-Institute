@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "575715152162",
+    "firebase_url": "https://nanasa-project.firebaseio.com",
+    "project_id": "nanasa-project",
+    "storage_bucket": "nanasa-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575715152162:android:213fe18a792a68130e557b",
+        "android_client_info": {
+          "package_name": "com.nanasaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "575715152162-8qmi2e43m11c6388nlue4vc4bmqd5sv6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYHRrdXpsi4EEw5UFIa2CVE2BjsGlESDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "575715152162-8qmi2e43m11c6388nlue4vc4bmqd5sv6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
