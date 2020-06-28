@@ -38,7 +38,7 @@ export default function AdminHome({ navigation }) {
                                     <Avatar
                                         size="large"
                                         rounded
-                                        source={{ uri: 'https://reactjs.org/logo-og.png' }}
+                                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/UserProfileImage%2Fdefault.png?alt=media&token=b9aefa06-2472-4ccd-b023-ef08ea77c475' }}
                                     />
                                 </View>
                                 <View>

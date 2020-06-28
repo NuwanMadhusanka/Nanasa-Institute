@@ -23,7 +23,6 @@ const loginSchema = yup.object({
 
 export default function Login({ navigation }) {
 
-    navigation.navigate('Admin');
     const login = ({ email, password }) => {
 
         auth()

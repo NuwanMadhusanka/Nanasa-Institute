@@ -10,6 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 import FlashMessage from "react-native-flash-message";
 import { showMessage, hideMessage } from "react-native-flash-message";
 
+
 const registerSchema = yup.object({
     Name: yup.string().
         required(),
@@ -27,6 +28,40 @@ const registerSchema = yup.object({
 export default function InstructorRegister({ navigation }) {
 
 
+    const registerInstructor = ({ Name, Email, TelNumber, Subject }) => {
+
+        auth()
+            .createUserWithEmailAndPassword(Email, TelNumber)
+            .then(({ user }) => {
+                console.log('User account created & signed in!');
+                firestore()
+                    .collection('User')
+                    .doc(user.uid)
+                    .set({
+                        userName: Name,
+                        nameWithInitial: Name,
+                        contactNUmber: TelNumber,
+                        subject: Subject,
+                        role: 2,
+                        status: 1,
+
+                    })
+                    .then(() => {
+                        console.log('User added!');
+                    });
+            })
+            .catch(error => {
+                if (error.code === 'auth/email-already-in-use') {
+                    console.log('That email address is already in use!');
+                }
+
+                if (error.code === 'auth/invalid-email') {
+                    console.log('That email address is invalid!');
+                }
+
+                console.error(error);
+            });
+    }
 
 
     return (
@@ -40,7 +75,7 @@ export default function InstructorRegister({ navigation }) {
                         validationSchema={registerSchema}
                         onSubmit={(values, actions) => {
                             //actions.resetForm();
-                            //login(values);
+                            registerInstructor(values);
                         }}
                     >
 
