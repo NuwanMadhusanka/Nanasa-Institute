@@ -1,9 +1,12 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { globalStyles } from '../styles/global';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import FlatButton from '../shared/button';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const loginSchema = yup.object({
     email: yup.string()
@@ -18,16 +21,48 @@ const loginSchema = yup.object({
 
 export default function Login({ navigation }) {
 
+
     const login = ({ email, password }) => {
-        if (email == 'admin@gmail.com') {
-            navigation.navigate('Admin');
-        } else if (email == 'instructor@gmail.com') {
-            navigation.navigate('Instructor');
-        } else if (email == 'student@gmail.com') {
-            navigation.navigate('Student');
-        } else {
-            navigation.navigate('Login');
-        }
+
+        auth()
+            .signInWithEmailAndPassword(email, password)
+            .then(({ user }) => {
+                //console.log(user.uid);
+
+                firestore()
+                    .collection('User')
+                    .doc(user.uid)
+                    .get()
+                    .then(documentSnapshot => {
+                        //console.log('User exists: ', documentSnapshot.exists);
+
+                        if (documentSnapshot.exists) {
+                            //console.log(documentSnapshot.data());
+                            //console.log('User data: ', documentSnapshot.data().nameWithInitial);
+
+                            var role = documentSnapshot.data().role;
+                            var status = documentSnapshot.data().status;
+                            if (status === 1) {
+                                if (role === 1) {
+                                    navigation.navigate('Admin');
+                                } else if (role === 2) {
+                                    navigation.navigate('Instructor');
+                                } else if (role === 3) {
+                                    navigation.navigate('Student');
+                                } else {
+                                    navigation.navigate('Login');
+                                }
+                            } else {
+                                console.log('Your account deactivated.');
+                            }
+                        } else {
+                            console.log('Try again');
+                        }
+                    });
+            })
+            .catch(error => {
+                console.log('Invalid credential');
+            });
     }
 
     return (
