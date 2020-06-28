@@ -2,10 +2,10 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
-export default function StudentHome() {
+export default function Profile() {
     return (
         <View styles={styles.container}>
-            <Text styles={styles.text}>Student</Text>
+            <Text styles={styles.text}>Profile</Text>
         </View>
     );
 }

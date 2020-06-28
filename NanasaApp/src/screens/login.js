@@ -7,6 +7,8 @@ import * as yup from 'yup';
 import FlatButton from '../shared/button';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import FlashMessage from "react-native-flash-message";
+import { showMessage, hideMessage } from "react-native-flash-message";
 
 const loginSchema = yup.object({
     email: yup.string()
@@ -21,7 +23,7 @@ const loginSchema = yup.object({
 
 export default function Login({ navigation }) {
 
-
+    navigation.navigate('Admin');
     const login = ({ email, password }) => {
 
         auth()
@@ -54,14 +56,26 @@ export default function Login({ navigation }) {
                                 }
                             } else {
                                 console.log('Your account deactivated.');
+                                showMessage({
+                                    message: 'Your account deactivated.',
+                                    type: 'danger',
+                                });
                             }
                         } else {
                             console.log('Try again');
+                            showMessage({
+                                message: 'Try again.',
+                                type: 'danger',
+                            });
                         }
                     });
             })
             .catch(error => {
                 console.log('Invalid credential');
+                showMessage({
+                    message: 'Invalid credentials.',
+                    type: 'danger',
+                });
             });
     }
 
@@ -110,6 +124,7 @@ export default function Login({ navigation }) {
                     </Formik>
 
                 </View>
+                <FlashMessage position="top" />
             </View>
         </TouchableWithoutFeedback>
     );

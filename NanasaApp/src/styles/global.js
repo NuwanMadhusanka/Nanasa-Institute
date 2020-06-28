@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { StyleSheet } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
@@ -18,5 +19,10 @@ export const globalStyles = StyleSheet.create({
         marginBottom: 10,
         marginTop: 6,
         textAlign: 'center'
-    }
+    },
+    titleText: {
+        fontFamily: 'Nunito-Bold',
+        fontSize: 18,
+        color: '#333',
+    },
 });

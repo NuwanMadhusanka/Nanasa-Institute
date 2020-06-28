@@ -1,10 +1,57 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+/* eslint-disable prettier/prettier */
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Card from '../../shared/card';
+import { globalStyles } from '../../styles/global';
+import { Avatar } from 'react-native-elements';
 
-export default function AdminHome() {
+
+export default function AdminHome({ navigation }) {
+
+    const [instructors, setIntructors] = useState([
+        { nameWithInital: 'D.M Nuwan', subject: 'Maths', contactNumber: '0773015590', key: '1' },
+        { nameWithInital: 'D.M Nuwan', subject: 'Maths', contactNumber: '0773015590', key: '2' },
+        { nameWithInital: 'D.M Nuwan', subject: 'Maths', contactNumber: '0773015590', key: '3' },
+    ]);
+
+    const instructorRegister = () => {
+        navigation.navigate('InstructorRegister');
+    };
+
     return (
         <View styles={styles.container}>
-            <Text styles={styles.text}>Admin</Text>
+            <Icon
+                name='add'
+                size={24}
+                style={styles.instructorToggle}
+                onPress={instructorRegister}
+            />
+
+            <FlatList
+                data={instructors}
+                renderItem={({ item }) => (
+                    <TouchableOpacity >
+                        <Card>
+                            <View style={styles.card}>
+                                <View style={styles.image}>
+                                    <Avatar
+                                        size="large"
+                                        rounded
+                                        source={{ uri: 'https://reactjs.org/logo-og.png' }}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={globalStyles.titleText}>{item.nameWithInital}</Text>
+                                    <Text style={globalStyles.titleText}>{item.contactNumber}</Text>
+                                    <Text style={globalStyles.titleText}>{item.subject}</Text>
+                                </View>
+                            </View>
+                        </Card>
+                    </TouchableOpacity>
+                )}
+            />
+
         </View>
     );
 }
@@ -17,5 +64,19 @@ const styles = StyleSheet.create({
     text: {
         backgroundColor: 'green',
         fontSize: 15
+    },
+    instructorToggle: {
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#f2f2f2',
+        padding: 10,
+        borderRadius: 10,
+        alignSelf: 'center'
+    },
+    card: {
+        flexDirection: 'row',
+    },
+    image: {
+        marginRight: 40
     }
 });
