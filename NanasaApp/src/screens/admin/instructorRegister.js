@@ -30,10 +30,13 @@ export default function InstructorRegister({ navigation }) {
 
     const registerInstructor = ({ Name, Email, TelNumber, Subject }) => {
 
+        let isInstructorRegisterSuccess = '';
+
         auth()
             .createUserWithEmailAndPassword(Email, TelNumber)
             .then(({ user }) => {
                 console.log('User account created & signed in!');
+                //Register User
                 firestore()
                     .collection('User')
                     .doc(user.uid)
@@ -41,26 +44,58 @@ export default function InstructorRegister({ navigation }) {
                         userName: Name,
                         nameWithInitial: Name,
                         contactNUmber: TelNumber,
-                        subject: Subject,
                         role: 2,
                         status: 1,
 
                     })
                     .then(() => {
                         console.log('User added!');
+                        //Register Instructor
+                        firestore()
+                            .collection('Instructor')
+                            .add({
+                                subject: Subject,
+                                paper: [],
+                                note: [],
+                                userId: firestore().doc('/User/' + user.uid),
+                            })
+                            .then(() => {
+                                console.log('Instructor added!');
+                                //navigation.navigate('AdminHome');
+                                showMessage({
+                                    message: 'Instructor Registration Successful.',
+                                    type: 'success',
+                                });
+                                isInstructorRegisterSuccess = true;
+                            });
                     });
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
                     console.log('That email address is already in use!');
+                    showMessage({
+                        message: 'That email address is already in use!',
+                        type: 'danger',
+                    });
                 }
 
                 if (error.code === 'auth/invalid-email') {
                     console.log('That email address is invalid!');
+                    showMessage({
+                        message: 'That email address is invalid!',
+                        type: 'danger',
+                    });
                 }
 
-                console.error(error);
+                //console.error(error);
             });
+
+        if (!isInstructorRegisterSuccess) {
+            showMessage({
+                message: 'Instructor Registration Not Successful.',
+                type: 'danger',
+            });
+        }
     }
 
 

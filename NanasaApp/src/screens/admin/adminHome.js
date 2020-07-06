@@ -1,13 +1,31 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Card from '../../shared/card';
 import { globalStyles } from '../../styles/global';
 import { Avatar } from 'react-native-elements';
+import firestore from '@react-native-firebase/firestore';
 
 
 export default function AdminHome({ navigation }) {
+
+
+    useEffect(() => {
+        firestore()
+            .collection('Instructor')
+            .get()
+            .then(querySnapshot => {
+                console.log('Total users: ', querySnapshot.size);
+
+                querySnapshot.forEach(documentSnapshot => {
+                    console.log('Instructor ID: ', documentSnapshot.id, documentSnapshot);
+                    console.log('User ID: ', documentSnapshot.id, documentSnapshot.data().userId);
+                });
+            });
+    });
+
+
 
     const [instructors, setIntructors] = useState([
         { nameWithInital: 'D.M Nuwan', subject: 'Maths', contactNumber: '0773015590', key: '1' },
