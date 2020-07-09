@@ -30,7 +30,7 @@ const registerSchema = yup.object({
 
 
 
-export default function InstructorRegister({ navigation }) {
+export default function InstructorNotesAdd({ navigation }) {
 
     const [loading, setLoading] = useState(false);
     const registerInstructor = ({ Name, Nic, Email, TelNumber, Subject }) => {
@@ -132,51 +132,15 @@ export default function InstructorRegister({ navigation }) {
 
                                     <TextInput
                                         style={globalStyles.input}
-                                        placeholder='Name With Initial'
+                                        placeholder='Title'
                                         onChangeText={props.handleChange('Name')}
                                         values={props.values.Name}
                                         onBlur={props.handleBlur('Name')}
                                     />
                                     <Text style={globalStyles.errorText}>{props.touched.Name && props.errors.Name}</Text>
 
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        placeholder='NIC'
-                                        onChangeText={props.handleChange('Nic')}
-                                        values={props.values.Nic}
-                                        onBlur={props.handleBlur('Nic')}
-                                    />
-                                    <Text style={globalStyles.errorText}>{props.touched.Nic && props.errors.Nic}</Text>
 
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        keyboardType='numeric'
-                                        placeholder='Contact Number'
-                                        onChangeText={props.handleChange('TelNumber')}
-                                        values={props.values.TelNumber}
-                                        onBlur={props.handleBlur('TelNumber')}
-                                    />
-                                    <Text style={globalStyles.errorText}>{props.touched.TelNumber && props.errors.TelNumber}</Text>
-
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        placeholder='Email'
-                                        onChangeText={props.handleChange('Email')}
-                                        values={props.values.Email}
-                                        onBlur={props.handleBlur('Email')}
-                                    />
-                                    <Text style={globalStyles.errorText}>{props.touched.Email && props.errors.Email}</Text>
-
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        placeholder='Subject'
-                                        onChangeText={props.handleChange('Subject')}
-                                        values={props.values.Subject}
-                                        onBlur={props.handleBlur('Subject')}
-                                    />
-                                    <Text style={globalStyles.errorText}>{props.touched.Subject && props.errors.Subject}</Text>
-
-                                    <FlatButton text="Register" onPress={props.handleSubmit} />
+                                    <FlatButton text="Add" onPress={props.handleSubmit} />
                                 </View>
 
                             )}

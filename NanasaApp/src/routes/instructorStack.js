@@ -1,5 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { createStackNavigator } from 'react-navigation-stack';
 import InstructorHome from '../screens/instructor/instructorHome';
+import InstructorNotesAdd from '../screens/instructor/instructorNotesAdd';
 
 
 const screens = {

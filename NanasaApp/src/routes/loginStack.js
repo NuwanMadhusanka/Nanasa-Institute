@@ -8,6 +8,7 @@ import StudentStack from './studentStack';
 import Login from '../screens/login';
 import Header from '../shared/header';
 import InstructorRegister from '../screens/admin/instructorRegister';
+import InstructorNotesAdd from '../screens/instructor/instructorNotesAdd';
 
 
 const screens = {
@@ -37,6 +38,12 @@ const screens = {
             title: 'Instructor Register'
         }
     },
+    InstructorNotesAdd: {
+        screen: InstructorNotesAdd,
+        navigationOptions: {
+            title: 'Notes Add'
+        }
+    }
 
 }
 
