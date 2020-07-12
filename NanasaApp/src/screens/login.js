@@ -47,7 +47,9 @@ export default function Login({ navigation }) {
                                 if (role === 1) {
                                     navigation.navigate('Admin');
                                 } else if (role === 2) {
-                                    navigation.navigate('Instructor');
+                                    let data = { 'uid': user.uid, 'nic': documentSnapshot.data().nic };
+                                    navigation.navigate('Instructor', data);
+                                    //navigation.navigate('Instructor');
                                 } else if (role === 3) {
                                     navigation.navigate('Student');
                                 } else {
@@ -123,7 +125,7 @@ export default function Login({ navigation }) {
                     </Formik>
 
                 </View>
-                <FlashMessage position="top" />
+                <FlashMessage position="bottom" />
             </View>
         </TouchableWithoutFeedback>
     );
