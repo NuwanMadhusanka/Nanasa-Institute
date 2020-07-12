@@ -6,7 +6,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 import { globalStyles } from '../../styles/global';
 import { Avatar } from 'react-native-elements';
-import Pdf from 'react-native-pdf';
+import { PermissionsAndroid, Alert } from "react-native";
+import RNFetchBlob from 'rn-fetch-blob';
+import storage from '@react-native-firebase/storage';
 
 
 export default function InstructorHome({ navigation }) {
@@ -23,6 +25,7 @@ export default function InstructorHome({ navigation }) {
                 if (!querySnapshot.empty && querySnapshot.size === 1) {
                     let data = querySnapshot.docs[0].data();
                     setNotes(data.note);
+                    setInstructorId(querySnapshot.docs[0].id);
                 }
             });
 
@@ -55,6 +58,94 @@ export default function InstructorHome({ navigation }) {
         navigation.navigate('InstructorNotesAdd', data);
     };
 
+    const actualDownload = ({ url, title }) => {
+        const { dirs } = RNFetchBlob.fs;
+        RNFetchBlob.config({
+            fileCache: true,
+            addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                mediaScannable: true,
+                title: `${title}`,
+                path: `${dirs.DownloadDir}/${title}.pdf`,
+            },
+        })
+            .fetch('GET', url, {})
+            .then((res) => {
+                console.log('The file saved to ', res.path());
+            })
+            .catch((e) => {
+                console.log(e)
+            });
+    }
+
+    const downloadFile = ({ url, title }) => {
+        console.log(url);
+        (async () => {
+            console.log(title);
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                actualDownload({ 'url': url, 'title': title });
+            } else {
+                Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
+            }
+        })();
+    }
+
+    const deleteFile = ({ fileName }) => {
+        (async () => {
+            let path = `Notes/${navigation.getParam('nic')}/${fileName}`;
+            console.log(path);
+            const reference = storage().ref(path);
+            reference
+                .delete()
+                .then(() => {
+                    console.log(`${fileName}has been deleted successfully.`);
+                    updateInstructorDocument({ 'fileName': fileName });
+                })
+                .catch((e) => console.log('error on image deletion => ', e));
+        })();
+    }
+
+    const updateInstructorDocument = ({ fileName }) => {
+
+        //get instructor data
+        firestore()
+            .collection('Instructor')
+            .doc(instructorId)
+            .get()
+            .then(documentSnapshot => {
+                console.log('Instructor exists: ', documentSnapshot.exists);
+
+                if (documentSnapshot.exists) {
+                    let data = documentSnapshot.data();
+                    let notesList = [];
+                    data.note.forEach(element => {
+                        if (element.fileName !== fileName) {
+                            notesList.push(element);
+                        }
+                    });
+
+
+                    //update the document of instructor
+                    firestore()
+                        .collection('Instructor')
+                        .doc(instructorId)
+                        .update({
+                            note: notesList,
+                        })
+                        .then(() => {
+                            console.log('Instructor updated!');
+                        });
+
+
+                } else {
+                    setLoading(false);
+                }
+            });
+
+    }
+
 
     return (
         <View styles={styles.container}>
@@ -77,12 +168,14 @@ export default function InstructorHome({ navigation }) {
                                     <Text style={styles.mainSubTitle}>{item.title}</Text>
                                     <View style={styles.listData}>
                                         <View>
-                                            <Avatar
-                                                onPress={() => { navigation.navigate('PdfView', { 'url': item.url }) }}
-                                                size="large"
-                                                rounded
-                                                source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/pdf_download.png?alt=media&token=b33653a1-b9a1-4513-a7f1-3ce6f8b864d5' }}
-                                            />
+                                            <TouchableOpacity>
+                                                <Avatar
+                                                    onPress={() => { downloadFile({ 'url': item.url, 'title': item.title }) }}
+                                                    size="large"
+                                                    rounded
+                                                    source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/pdf_download.png?alt=media&token=b33653a1-b9a1-4513-a7f1-3ce6f8b864d5' }}
+                                                />
+                                            </TouchableOpacity>
                                         </View>
                                         <View style={{ marginLeft: 15, width: 205 }}>
                                             <Text style={globalStyles.titleText}>{item.description}</Text>
@@ -97,7 +190,7 @@ export default function InstructorHome({ navigation }) {
                                                     name='delete'
                                                     size={24}
                                                     style={styles.noteToggle}
-                                                    onPress={noteAdd}
+                                                    onPress={() => deleteFile({ 'fileName': item.fileName })}
                                                 />
                                             </View>
                                         </View>

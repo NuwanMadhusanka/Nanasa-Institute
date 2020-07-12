@@ -9,7 +9,7 @@ import Login from '../screens/login';
 import Header from '../shared/header';
 import InstructorRegister from '../screens/admin/instructorRegister';
 import InstructorNotesAdd from '../screens/instructor/instructorNotesAdd';
-import PdfView from '../screens/instructor/PdfView';
+
 
 
 const screens = {
@@ -45,12 +45,6 @@ const screens = {
             title: 'Notes Add'
         }
     },
-    PdfView: {
-        screen: PdfView,
-        navigationOptions: {
-            title: ''
-        }
-    }
 
 }
 

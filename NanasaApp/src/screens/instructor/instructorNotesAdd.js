@@ -77,7 +77,7 @@ export default function InstructorNotesAdd({ navigation }) {
                         let data = documentSnapshot.data();
                         let notesList = [];
                         notesList = data.note;
-                        let newNote = { 'title': title, 'description': description, 'url': url };
+                        let newNote = { 'title': title, 'description': description, 'url': url, 'fileName': fileName };
                         notesList.push(newNote);
 
                         //update the document of instructor
@@ -88,9 +88,9 @@ export default function InstructorNotesAdd({ navigation }) {
                                 note: notesList,
                             })
                             .then(() => {
-                                setLoading(false);
                                 setFileUri('');
                                 setFileName('');
+                                setLoading(false);
                                 console.log('Instructor updated!');
                                 showMessage({
                                     message: 'Save successfully.',
