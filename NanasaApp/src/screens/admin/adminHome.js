@@ -1,56 +1,79 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Card from '../../shared/card';
 import { globalStyles } from '../../styles/global';
-import { Avatar } from 'react-native-elements';
+import { Avatar, Badge } from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 
 
 export default function AdminHome({ navigation }) {
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [instructors, setIntructors] = useState([]);
+    var [isUpdateData, setIsUpdateData] = useState(true);
+    const [refreshing, setRefreshing] = React.useState(false);
 
     useEffect(() => {
-        const subscriber = firestore()
+        if (isUpdateData) {
+            getData()
+        }
+    });
+
+    const getData = () => {
+        firestore()
             .collection('Instructor')
             .onSnapshot(querySnapshot => {
 
-                const instructors = [];
-
+                let instructorData = [];
                 querySnapshot.forEach(documentSnapshot => {
                     let userId = documentSnapshot.data().userId;
                     let instructorId = documentSnapshot.data().instructorId;
                     let subject = documentSnapshot.data().subject;
-                    const subscriber = firestore()
+                    firestore()
                         .collection('User')
                         .doc(userId)
                         .onSnapshot(querySnapshotUser => {
 
 
-                            instructors.push({
+                            instructorData.push({
                                 nameWithInital: querySnapshotUser.data().nameWithInitial,
                                 contactNumber: querySnapshotUser.data().contactNumber,
+                                status: querySnapshotUser.data().status,
+                                url: querySnapshotUser.data().url,
                                 subject: subject,
+                                userId: userId,
                                 key: instructorId,
                             });
+                            setIntructors(instructorData);
 
                             setLoading(false);
-                            setIntructors(instructors);
-                            console.log(instructors);
+                            setIsUpdateData(false);
+
+                            //console.log(instructors);
 
                         });
-
-                    // Unsubscribe from events when no longer in use
-                    return () => subscriber();
                 });
             });
+    }
 
-        // Unsubscribe from events when no longer in use
-        return () => subscriber();
-    }, []);
+    const updateInstructorStatus = ({ userId, newStatus }) => {
+        setLoading(true);
+        firestore()
+            .collection('User')
+            .doc(userId)
+            .update({
+                status: newStatus,
+            })
+            .then(() => {
+                console.log('Instructor status updated!');
+                setIntructors([]);
+                getData();
+                setLoading(false);
+            });
+    }
+
 
 
     const instructorRegister = () => {
@@ -58,19 +81,19 @@ export default function AdminHome({ navigation }) {
     };
 
     if (loading) {
-        return <ActivityIndicator />;
+        return (<ActivityIndicator />);
     }
 
     return (
         <View styles={styles.container}>
             <ScrollView>
+
                 <Icon
                     name='add'
                     size={24}
                     style={styles.instructorToggle}
                     onPress={instructorRegister}
                 />
-
 
                 <FlatList
                     data={instructors}
@@ -82,13 +105,20 @@ export default function AdminHome({ navigation }) {
                                         <Avatar
                                             size="large"
                                             rounded
-                                            source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/UserProfileImage%2Fdefault.png?alt=media&token=b9aefa06-2472-4ccd-b023-ef08ea77c475' }}
+                                            source={{ uri: item.url }}
                                         />
                                     </View>
                                     <View>
                                         <Text style={globalStyles.titleText}>Name  :{item.nameWithInital}</Text>
                                         <Text style={globalStyles.titleText}>Tel       :{item.contactNumber}</Text>
                                         <Text style={globalStyles.titleText}>Sub      :{item.subject}</Text>
+                                        <View style={styles.status}>
+                                            <Text style={globalStyles.titleText}>Status:</Text>
+                                            {item.status === 1 ?
+                                                <Badge containerStyle={{ top: 4 }} value="Active" status="success" onPress={() => updateInstructorStatus({ 'userId': item.userId, 'newStatus': 0 })} />
+                                                : <Badge containerStyle={{ top: 4 }} value="Deactive" status="error" onPress={() => updateInstructorStatus({ 'userId': item.userId, 'newStatus': 1 })} />}
+                                        </View>
+
                                     </View>
                                 </View>
                             </Card>
@@ -124,5 +154,8 @@ const styles = StyleSheet.create({
     },
     image: {
         marginRight: 40
+    },
+    status: {
+        flexDirection: "row"
     }
 });

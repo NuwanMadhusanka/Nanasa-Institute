@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
-import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, AsyncStorage } from 'react-native';
 import { globalStyles } from '../styles/global';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -9,6 +9,10 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import FlashMessage from "react-native-flash-message";
 import { showMessage, hideMessage } from "react-native-flash-message";
+import AdminNavigator from '../routes/admin/adminTabNavigation';
+import InstructorNavigation from '../routes/instructor/instructorTabNavigation';
+import StudentNavigation from '../routes/student/studentTabNavigation';
+import StudentSignup from './student/studentSignup';
 
 const loginSchema = yup.object({
     email: yup.string()
@@ -23,8 +27,14 @@ const loginSchema = yup.object({
 
 export default function Login({ navigation }) {
 
-    const login = ({ email, password }) => {
+    const [adminPage, setAdminPage] = useState(false);
+    const [instructorPage, setInstructorPage] = useState(false);
+    const [studentPage, setStudentPage] = useState(false);
+    const [studentSignup, setStudentSignup] = useState(false);
+    const [loginPage, setLoginPage] = useState(true);
 
+
+    const login = ({ email, password }) => {
         auth()
             .signInWithEmailAndPassword(email, password)
             .then(({ user }) => {
@@ -43,17 +53,24 @@ export default function Login({ navigation }) {
 
                             var role = documentSnapshot.data().role;
                             var status = documentSnapshot.data().status;
+
+                            var userId = user.uid;
+                            var userNic = documentSnapshot.data().nic;
+                            var userRole = documentSnapshot.data().role;
+
+                            (async () => {
+                                saveUserData(userId, userNic, userRole);
+                            })();
+
                             if (status === 1) {
                                 if (role === 1) {
-                                    navigation.navigate('Admin');
+                                    setAdminPage(true);
                                 } else if (role === 2) {
-                                    let data = { 'uid': user.uid, 'nic': documentSnapshot.data().nic };
-                                    navigation.navigate('Instructor', data);
-                                    //navigation.navigate('Instructor');
+                                    setInstructorPage(true);
                                 } else if (role === 3) {
-                                    navigation.navigate('Student');
+                                    setStudentPage(true);
                                 } else {
-                                    navigation.navigate('Login');
+                                    //navigation.navigate('Login');
                                 }
                             } else {
                                 console.log('Your account deactivated.');
@@ -78,6 +95,35 @@ export default function Login({ navigation }) {
                     type: 'danger',
                 });
             });
+    }
+
+    const saveUserData = async (userId, userNic, userRole) => {
+        try {
+            await AsyncStorage.setItem('userId', userId);
+            await AsyncStorage.setItem('userNic', userNic);
+            await AsyncStorage.setItem('userRole', userRole);
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
+
+    if (adminPage) {
+        return (
+            < AdminNavigator />);
+    }
+    if (instructorPage) {
+        return (
+            <InstructorNavigation />);
+    }
+    if (studentPage) {
+        return (
+            <StudentNavigation />
+        );
+    }
+    if (studentSignup) {
+        return (
+            <StudentSignup />
+        );
     }
 
     return (
@@ -123,7 +169,7 @@ export default function Login({ navigation }) {
                         )}
 
                     </Formik>
-
+                    <Text style={styles.signupLink} onPress={() => { setStudentSignup(true) }} >Student Signup</Text>
                 </View>
                 <FlashMessage position="bottom" />
             </View>
@@ -140,5 +186,10 @@ const styles = StyleSheet.create({
     },
     loginBox: {
         marginTop: 60
+    },
+    signupLink: {
+        alignSelf: "center",
+        marginTop: 20,
+        color: "blue"
     }
 });

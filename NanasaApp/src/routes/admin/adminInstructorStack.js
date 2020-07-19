@@ -6,7 +6,7 @@ import { createAppContainer } from 'react-navigation';
 
 
 const screens = {
-    AdminHome: {
+    InstructorDetails: {
         screen: AdminHome,
         navigationOptions: {
             title: 'Instructor Details'

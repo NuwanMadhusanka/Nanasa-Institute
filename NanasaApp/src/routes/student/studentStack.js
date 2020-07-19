@@ -1,13 +1,17 @@
+/* eslint-disable prettier/prettier */
 import { createStackNavigator } from 'react-navigation-stack';
-import StudentHome from '../screens/student/studentHome';
+import StudentHome from '../../screens/student/studentHome';
+import { createAppContainer } from 'react-navigation';
+
+
 
 
 const screens = {
     StudentHome: {
         screen: StudentHome,
         navigationOptions: {
-            title: 'Student Home Page'
-        }
+            title: 'Notes'
+        },
     },
 }
 
@@ -18,4 +22,4 @@ const StudentStack = createStackNavigator(screens, {
     }
 });
 
-export default StudentStack;
+export default createAppContainer(StudentStack);

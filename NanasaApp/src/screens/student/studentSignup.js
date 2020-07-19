@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, Picker, ScrollView, ActivityIndicator } from 'react-native';
 import { globalStyles } from '../../styles/global';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -9,7 +9,8 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import FlashMessage from "react-native-flash-message";
 import { showMessage, hideMessage } from "react-native-flash-message";
-import { set } from 'react-native-reanimated';
+import { set, color } from 'react-native-reanimated';
+import Login from '../login';
 
 
 const registerSchema = yup.object({
@@ -20,22 +21,52 @@ const registerSchema = yup.object({
         matches(/^\d{9,9}[v,V]$/, 'Insert valid nic')
     ,
     TelNumber: yup.string().
-        required('Telephone number required '),
+        required('Telephone number required ').
+        matches(/^\d{10,10}$/, 'Insert valid contact'),
     Email: yup.string()
         .required('Email required').
         email('Insert valid email'),
-    Subject: yup.string().
-        required('Subject required'),
+    Instructor: yup.string().
+        required('Select instructor'),
 })
 
 
 
-export default function InstructorRegister({ navigation }) {
+export default function StudentSignup() {
 
     const [loading, setLoading] = useState(false);
-    const registerInstructor = ({ Name, Nic, Email, TelNumber, Subject }) => {
+    const [instructorList, setInstructorList] = useState([{ 'name': '', 'id': '' }]);
+    const [instructorItemLoad, setInstructorItemLoad] = useState(true);
+    const [signupSuccess, setSignupSuccess] = useState(false);
 
-        let isInstructorRegisterSuccess = '';
+    useEffect(() => {
+        getInstructor();
+    });
+
+    const getInstructor = () => {
+        if (instructorItemLoad) {
+            firestore()
+                .collection('User')
+                // Filter results
+                .where('role', '==', 2)
+                .get()
+                .then(querySnapshot => {
+                    let list = [];
+                    querySnapshot.forEach(user => {
+                        list.push({
+                            'name': user.data().nameWithInitial,
+                            'uid': '' + user.id,
+                        })
+                    });
+                    setInstructorList(list);
+                    setInstructorItemLoad(false);
+                });
+        }
+    }
+
+    const registerStudent = ({ Name, Nic, Email, TelNumber, Instructor }) => {
+
+
         setLoading(true);
 
         auth()
@@ -51,31 +82,28 @@ export default function InstructorRegister({ navigation }) {
                         nameWithInitial: Name,
                         contactNumber: TelNumber,
                         nic: Nic,
-                        role: 2,
-                        status: 1,
+                        role: 3,
+                        status: 0,
                         email: Email,
                         url: 'https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/UserProfileImage%2Fdefault.png?alt=media&token=b9aefa06-2472-4ccd-b023-ef08ea77c475'
 
                     })
                     .then(() => {
-                        console.log('User added!');
-                        //Register Instructor
+                        console.log('Student added!');
+
                         firestore()
-                            .collection('Instructor')
+                            .collection('Student')
                             .add({
-                                subject: Subject,
-                                note: [],
+                                instructorUserId: Instructor,
                                 userId: user.uid,
                             })
                             .then(() => {
                                 setLoading(false);
-                                console.log('Instructor added!');
-                                //navigation.navigate('AdminHome');
+                                setSignupSuccess(true);
                                 showMessage({
-                                    message: 'Instructor Registration Successful.',
+                                    message: 'Signup request successful.',
                                     type: 'success',
                                 });
-                                isInstructorRegisterSuccess = true;
                             });
                     });
             })
@@ -99,32 +127,30 @@ export default function InstructorRegister({ navigation }) {
 
                 //console.error(error);
             });
-
-        if (!isInstructorRegisterSuccess) {
-            showMessage({
-                message: 'Instructor Registration Not Successful.',
-                type: 'danger',
-            });
-        }
     }
 
     if (loading) {
         return <ActivityIndicator />;
     }
 
+    if (signupSuccess) {
+        return (<Login />);
+    }
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView>
                 <View style={globalStyles.container}>
-
+                    <Text style={globalStyles.titleText}>Student Signup Form</Text>
                     <View style={styles.formBox}>
 
                         <Formik
-                            initialValues={{ Name: '', TelNumber: '', Email: '', Subject: '', Nic: '' }}
+                            enableReinitialize
+                            initialValues={{ Name: '', TelNumber: '', Email: '', Subject: '', Nic: '', Instructor: instructorList[0].uid }}
                             validationSchema={registerSchema}
                             onSubmit={(values, actions) => {
                                 actions.resetForm();
-                                registerInstructor(values);
+                                registerStudent(values);
                             }}
                         >
 
@@ -168,14 +194,20 @@ export default function InstructorRegister({ navigation }) {
                                     />
                                     <Text style={globalStyles.errorText}>{props.touched.Email && props.errors.Email}</Text>
 
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        placeholder='Subject'
-                                        onChangeText={props.handleChange('Subject')}
-                                        values={props.values.Subject}
-                                        onBlur={props.handleBlur('Subject')}
-                                    />
-                                    <Text style={globalStyles.errorText}>{props.touched.Subject && props.errors.Subject}</Text>
+                                    <Text style={styles.instructorStyle}>Instructor:</Text>
+                                    <Picker
+                                        selectedValue={props.values.Instructor}
+                                        style={{ height: 50, width: 200 }}
+                                        onValueChange={props.handleChange('Instructor')}
+
+                                    >
+                                        {
+                                            instructorList.map((x, i) => {
+                                                return (<Picker.Item label={x.name} value={x.uid} />)
+                                            })
+                                        }
+                                    </Picker>
+                                    <Text style={globalStyles.errorText}>{props.touched.Instructor && props.errors.Instructor}</Text>
 
                                     <FlatButton text="Register" onPress={props.handleSubmit} />
                                 </View>
@@ -201,5 +233,9 @@ const styles = StyleSheet.create({
     },
     formBox: {
         marginTop: 40
+    },
+    instructorStyle: {
+        fontSize: 20,
+        color: 'grey'
     }
 });

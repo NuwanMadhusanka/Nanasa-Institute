@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import Navigator from './routes/loginStack';
+import Login from './screens/login';
+import Navigator from './routes/drawer'
 
 
 const App: () => React$Node = () => {
   return (
-    <Navigator />
+    <Navigator> <Login /></Navigator>
   );
 };
 

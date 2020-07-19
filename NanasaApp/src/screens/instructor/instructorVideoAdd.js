@@ -28,44 +28,15 @@ const fileUpload = yup.object({
 
 
 
-export default function InstructorNotesAdd({ navigation }) {
+export default function InstructorVideosAdd({ navigation }) {
 
     const [loading, setLoading] = useState(false);
     const [fileName, setFileName] = useState('');
     const [fileUri, setFileUri] = useState('');
     const [isFileSelect, setIsFileSelect] = useState(false);
 
-
-    const checkIsDuplicateFileExist = ({ Title, Description }) => {
-        setLoading(true);
-        firestore()
-            .collection('Instructor')
-            .doc(navigation.getParam('instructorId'))
-            .get()
-            .then(documentSnapshot => {
-                if (documentSnapshot.exists) {
-                    let isFileDuplicate = false;
-                    let instructorNotes = documentSnapshot.data().note;
-                    instructorNotes.forEach(note => {
-                        if (note.fileName === fileName) {//File duplicate 
-                            isFileDuplicate = true;
-                        }
-                    });
-                    if (!isFileDuplicate) {
-                        uploadFile({ 'Title': Title, 'Description': Description });
-                    } else {
-                        console.log('File duplicated!');
-                        setLoading(false);
-                        showMessage({
-                            message: 'Not save successfully.',
-                            type: 'danger',
-                        });
-                    }
-                }
-            });
-    }
-
     const uploadFile = ({ Title, Description }) => {
+        setLoading(true);
         (async () => {
             let nic = navigation.getParam('nic');
             const reference = storage().ref(`Notes/${nic}/${fileName}`);
@@ -99,17 +70,17 @@ export default function InstructorNotesAdd({ navigation }) {
 
                     if (documentSnapshot.exists) {
                         let data = documentSnapshot.data();
-                        let notesList = [];
-                        notesList = data.note;
-                        let newNote = { 'title': title, 'description': description, 'url': url, 'fileName': fileName };
-                        notesList.push(newNote);
+                        let videosList = [];
+                        videosList = data.video;
+                        let addVideo = { 'title': title, 'description': description, 'url': url, 'fileName': fileName };
+                        videosList.push(addVideo);
 
                         //update the document of instructor
                         firestore()
                             .collection('Instructor')
                             .doc(instructorId)
                             .update({
-                                note: notesList,
+                                video: videosList,
                             })
                             .then(() => {
                                 setFileUri('');
@@ -157,7 +128,7 @@ export default function InstructorNotesAdd({ navigation }) {
                             onPress={async () => {
                                 try {
                                     const res = await DocumentPicker.pick({
-                                        type: [DocumentPicker.types.pdf],
+                                        type: [DocumentPicker.types.allFiles],
                                     });
 
                                     setFileUri(res.uri);
@@ -177,7 +148,7 @@ export default function InstructorNotesAdd({ navigation }) {
                                     size={30}
                                 />
                                 <Text style={{ marginLeft: 10, fontSize: 19 }}>
-                                    Select the file(PDF)
+                                    Select the file(Video)
                                  </Text>
                             </View>
 
@@ -197,7 +168,7 @@ export default function InstructorNotesAdd({ navigation }) {
                                 } else {
                                     setIsFileSelect(false);
                                     actions.resetForm();
-                                    checkIsDuplicateFileExist(values);
+                                    uploadFile(values);
                                 }
                             }}
                         >
@@ -215,7 +186,7 @@ export default function InstructorNotesAdd({ navigation }) {
                                     <Text style={globalStyles.errorText}>{props.touched.Title && props.errors.Title}</Text>
 
                                     <TextInput
-                                        style={globalStyles.inputDescription}
+                                        style={globalStyles.input}
                                         placeholder='Description'
                                         onChangeText={props.handleChange('Description')}
                                         values={props.values.Description}
@@ -231,9 +202,7 @@ export default function InstructorNotesAdd({ navigation }) {
 
                         </Formik>
 
-                        <View>
-                            <FlashMessage position="top" />
-                        </View>
+                        <FlashMessage position="top" />
                     </Card>
 
 

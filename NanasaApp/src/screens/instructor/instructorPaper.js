@@ -13,12 +13,12 @@ import storage from '@react-native-firebase/storage';
 
 
 
-export default function InstructorHome({ navigation }) {
+export default function InstructorPaper({ navigation }) {
 
 
     return (
         <View styles={styles.container}>
-            <Text>Home</Text>
+            <Text>Paper</Text>
         </View>
     );
 }
