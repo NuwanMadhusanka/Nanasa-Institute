@@ -30,7 +30,7 @@ export const globalStyles = StyleSheet.create({
     },
     titleText: {
         fontFamily: 'Nunito-Bold',
-        fontSize: 18,
+        fontSize: 16,
         color: '#333',
     },
 });

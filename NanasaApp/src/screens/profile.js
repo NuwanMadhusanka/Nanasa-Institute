@@ -7,6 +7,8 @@ import firestore from '@react-native-firebase/firestore';
 import FlatButton from '../shared/button';
 import DocumentPicker from 'react-native-document-picker';
 import storage from '@react-native-firebase/storage';
+import * as RNFS from 'react-native-fs';
+
 
 export default function Profile({ navigation }) {
 
@@ -18,8 +20,8 @@ export default function Profile({ navigation }) {
     const [userData, setUserData] = useState('');
     const [url, setUrl] = useState('https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/UserProfileImage%2Fdefault.png?alt=media&token=b9aefa06-2472-4ccd-b023-ef08ea77c475');
 
-    const [fileName, setFileName] = useState('');
-    const [fileUri, setFileUri] = useState('');
+    // const [fileName, setFileName] = useState('');
+    // const [fileUri, setFileUri] = useState('');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -66,16 +68,17 @@ export default function Profile({ navigation }) {
         navigation.navigate('ProfileUpdate');
     }
 
-    const uploadImage = () => {
+    const uploadImage = ({ fileUri }) => {
         setLoading(true);
         (async () => {
             console.log(fileUri);
             let nic = nic;
             const reference = storage().ref(`UserProfileImage/${nic}`);
             let dUri = decodeURI(fileUri);
+            console.log('=================================');
             const task = reference.putFile(dUri);
             task.on('state_changed', taskSnapshot => {
-                //console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+                console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
             });
 
             task.then((snapshot) => {
@@ -118,10 +121,8 @@ export default function Profile({ navigation }) {
                                 const res = await DocumentPicker.pick({
                                     type: [DocumentPicker.types.images],
                                 });
+                                uploadImage({ 'fileUri': res.uri, 'fileName': res.name });
 
-                                setFileUri(res.uri);
-                                setFileName(res.name);
-                                uploadImage();
                             } catch (err) {
                                 if (DocumentPicker.isCancel(err)) {
                                     // User cancelled the picker, exit any dialogs or menus and move on

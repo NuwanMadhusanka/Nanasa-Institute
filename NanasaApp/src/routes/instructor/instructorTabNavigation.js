@@ -14,10 +14,10 @@ const TabNavigationInstructor = createBottomTabNavigator({
     Home: {
         screen: profileStack,
     },
-    Note: {
+    Notes: {
         screen: instructorNoteStack,
     },
-    Student: {
+    Students: {
         screen: studentDataStack,
     },
     Login: {

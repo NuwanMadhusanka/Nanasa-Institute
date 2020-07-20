@@ -36,11 +36,12 @@ export default function InstructorNotesUpdate({ navigation }) {
                 if (documentSnapshot.exists) {
                     let notes = documentSnapshot.data().note;
                     let i = 0;
-                    let index = navigation.getParam('index')
+                    let index = navigation.getParam('index');
                     notes.forEach(element => {
                         if (index === i) {
                             setNote(element);
                         }
+                        i++;
                     });
                 }
             });

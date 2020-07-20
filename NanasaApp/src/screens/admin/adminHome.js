@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Card from '../../shared/card';
 import { globalStyles } from '../../styles/global';
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     image: {
-        marginRight: 40
+        marginRight: 30
     },
     status: {
         flexDirection: "row"

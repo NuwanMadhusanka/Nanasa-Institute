@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { createStackNavigator } from 'react-navigation-stack';
-import AdminHome from '../screens/admin/adminHome';
-import InstructorRegister from '../screens/admin/instructorRegister';
+import AdminHome from '../../screens/admin/adminHome';
+import InstructorRegister from '../../screens/admin/instructorRegister';
 import { createAppContainer } from 'react-navigation';
 
 

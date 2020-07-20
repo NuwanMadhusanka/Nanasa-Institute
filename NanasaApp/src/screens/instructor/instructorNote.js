@@ -23,6 +23,7 @@ export default function InstructorNote({ navigation }) {
     const [userNic, setUserNic] = useState('');
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [subject, setSubject] = useState('');
 
     useEffect(() => {
 
@@ -35,6 +36,7 @@ export default function InstructorNote({ navigation }) {
                 if (!querySnapshot.empty && querySnapshot.size === 1) {
                     let data = querySnapshot.docs[0].data();
                     setNotes(data.note);
+                    setSubject(data.subject);
                     setInstructorId(querySnapshot.docs[0].id);
                 }
             });
@@ -69,6 +71,7 @@ export default function InstructorNote({ navigation }) {
             }
             i++;
         });
+
         let data = { 'instructorId': instructorId, 'nic': userNic, 'index': index };
         navigation.navigate('InstructorNotesUpdate', data);
     };
@@ -172,7 +175,7 @@ export default function InstructorNote({ navigation }) {
             <ScrollView>
 
                 <Card>
-                    <Text style={styles.mainTitle}>Notes</Text>
+                    <Text style={styles.mainTitle}>Notes ({subject})</Text>
                     <Icon
                         name='add'
                         size={24}
@@ -239,7 +242,7 @@ const styles = StyleSheet.create({
     },
     mainTitle: {
         fontFamily: 'Nunito-Bold',
-        fontSize: 30,
+        fontSize: 20,
         color: 'grey',
     },
     mainSubTitle: {

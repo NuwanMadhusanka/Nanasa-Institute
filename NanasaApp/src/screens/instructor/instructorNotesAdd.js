@@ -15,6 +15,7 @@ import storage from '@react-native-firebase/storage';
 import { utils } from '@react-native-firebase/app';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Card from '../../shared/card';
+import * as RNFS from 'react-native-fs';
 
 
 
@@ -70,7 +71,7 @@ export default function InstructorNotesAdd({ navigation }) {
             let nic = navigation.getParam('nic');
             const reference = storage().ref(`Notes/${nic}/${fileName}`);
             let dUri = decodeURI(fileUri);
-            //console.log(dUri);
+            console.log(dUri);
             const task = reference.putFile(dUri);
             task.on('state_changed', taskSnapshot => {
                 //console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);

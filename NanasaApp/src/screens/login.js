@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, AsyncStorage } from 'react-native';
+import { Text, View, StyleSheet, TextInput, TouchableWithoutFeedback, Keyboard, AsyncStorage, Image } from 'react-native';
 import { globalStyles } from '../styles/global';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -129,6 +129,12 @@ export default function Login({ navigation }) {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={globalStyles.container}>
+
+                <View>
+                    <Image
+                        source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/nanasa-project.appspot.com/o/logo.png?alt=media&token=8c31ee20-c032-4204-8a40-83114d8ffe92' }}
+                    />
+                </View>
                 <Text style={styles.title}>Nanasa</Text>
 
                 <View style={styles.loginBox}>

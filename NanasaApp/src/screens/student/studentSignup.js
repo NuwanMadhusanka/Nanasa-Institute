@@ -32,7 +32,7 @@ const registerSchema = yup.object({
 
 
 
-export default function StudentSignup() {
+export default function StudentSignup({ navigation }) {
 
     const [loading, setLoading] = useState(false);
     const [instructorList, setInstructorList] = useState([{ 'name': '', 'id': '' }]);

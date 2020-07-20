@@ -3,7 +3,7 @@ import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import profileStack from '../profileStack';
-import adminStack from '../adminStack';
+import adminStack from './adminStack';
 import Login from '../../screens/login';
 
 
