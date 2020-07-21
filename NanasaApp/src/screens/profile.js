@@ -58,6 +58,9 @@ export default function Profile({ navigation }) {
             let nic = await AsyncStorage.getItem('userNic') || 'none';
             setUserId(uid);
             setUserNic(nic);
+            if (uid === 'none' || nic === 'none' || uid === null || nic == null) {
+                navigation.navigate('Login');
+            }
         } catch (error) {
             // Error retrieving data
             console.log(error.message);
@@ -71,11 +74,8 @@ export default function Profile({ navigation }) {
     const uploadImage = ({ fileUri }) => {
         setLoading(true);
         (async () => {
-            console.log(fileUri);
-            let nic = nic;
-            const reference = storage().ref(`UserProfileImage/${nic}`);
+            const reference = storage().ref(`UserProfileImage/${userNic}`);
             let dUri = decodeURI(fileUri);
-            console.log('=================================');
             const task = reference.putFile(dUri);
             task.on('state_changed', taskSnapshot => {
                 console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
